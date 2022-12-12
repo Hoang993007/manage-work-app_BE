@@ -1,0 +1,15 @@
+app:
+  name: socket-test
+  port: 3000
+  env: development
+  api_prefix: /api/v1
+
+database:
+  host: localhost
+  port: 5984
+  db_name: customers
+
+open_api:
+  title: Cats example
+  description: The cats API description
+  version: 1.0
