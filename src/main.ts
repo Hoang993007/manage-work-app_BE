@@ -1,3 +1,4 @@
+import { API_PREFIX, APP_PORT, OPEN_API_TITLE, OPEN_API_DESCRIPTION, OPEN_API_VERSION } from './shares/constants/constants';
 /**
  * Must import env at top of main.ts file so env will be loaded before any initialization of any module
  * Json file/ts file will be complied parallel with main file
@@ -17,28 +18,31 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 process.env["NODE_CONFIG_DIR"] = `./config`;
-import * as config from 'config';
 import { RequestMethod } from '@nestjs/common';
-
-const appPort = config.has('app.port') ? config.get<number>('app.port') : 3000;
-const apiPrefix = config.has('app.api_prefix') ? config.get<string>('app.api_prefix') : '';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix(apiPrefix, {
+  app.setGlobalPrefix(API_PREFIX, {
     exclude: [{ path: '/', method: RequestMethod.GET }],
   });
 
   const openApiConfig = new DocumentBuilder()
-    .setTitle(config.get<string>('open_api.title'))
-    .setDescription(config.get<string>('open_api.description'))
-    .setVersion(config.get<string>('open_api.version'))
-    .addBearerAuth()
+    .setTitle(OPEN_API_TITLE)
+    .setDescription(OPEN_API_DESCRIPTION)
+    .setVersion(OPEN_API_VERSION)
+    .addSecurity('BasicAuth', {
+      type: 'http',
+      scheme: 'basic',
+    })
+    .addSecurity('JWTAuth', {
+      type: 'http',
+      scheme: 'bearer'
+    })
     .build();
   const document = SwaggerModule.createDocument(app, openApiConfig);
   SwaggerModule.setup('api-docs', app, document);
 
-  await app.listen(appPort);
+  await app.listen(APP_PORT);
 }
 bootstrap();
