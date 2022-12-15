@@ -1,11 +1,11 @@
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtRefreshGuard } from './guard/jwt-refresh.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { UserLoginDto } from './dto/user-login.dto';
 import { LocalAuthGuard } from './guard/local-auth.guard';
-import { Controller, Post, UseGuards, Request, Get, Req, Param } from '@nestjs/common';
-import { ApiBody, ApiParam, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Controller, Post, UseGuards, Get, Req, Res } from '@nestjs/common';
+import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -29,24 +29,36 @@ export class AuthController {
   })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: any) {
-    const res = this.authService.login(req.user)
+  async login(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    const res = await this.authService.login(req.user);
+    response.cookie('refresh_token', res.refresh_token, { httpOnly: true });
+    delete res.refresh_token;
+
     return res;
   }
 
-  @ApiSecurity('JWTAuth')
   @UseGuards(JwtRefreshGuard)
   @Get('refresh-access-token')
-  refreshTokens(@Req() req: any) {
+  async refreshTokens(
+    @Req() req: any,
+    @Res({ passthrough: true }) response: Response
+  ) {
     const userId = req.user.userId;
     const refreshToken = req.user.refreshToken;
-    return this.authService.refreshToken(userId, refreshToken);
+    const res = await this.authService.refreshToken(userId, refreshToken);
+    response.cookie('refresh_token', res.refresh_token, { httpOnly: true });
+    delete res.refresh_token;
+
+    return res;
   }
 
   @ApiSecurity('JWTAuth')
   @UseGuards(JwtAuthGuard)
   @Post('logout')
-  async logout(@Request() req: any) {
+  async logout(@Req() req: Request) {
     const res = this.authService.logout(req.user);
     return res;
   }
