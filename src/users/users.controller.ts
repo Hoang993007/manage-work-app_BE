@@ -9,7 +9,6 @@ export class UsersController {
   @ApiSecurity('JWTAuth')
   @Get('profile')
   getProfile(@Request() req: any) {
-    console.log(req.user)
     return req.user;
   }
 }

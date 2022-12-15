@@ -9,11 +9,10 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
-        let refreshToken = request?.cookies["refresh_token"];
+        let refreshToken = request?.signedCookies["refresh_token"];
         if (!refreshToken) {
           return null;
         }
-        console.log(refreshToken)
         return refreshToken;
       }]),
       ignoreExpiration: false,

@@ -34,7 +34,11 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response
   ) {
     const res = await this.authService.login(req.user);
-    response.cookie('refresh_token', res.refresh_token, { httpOnly: true });
+    response.cookie('refresh_token', res.refresh_token, {
+      signed: true,
+      httpOnly: true,
+      secure: true
+    });
     delete res.refresh_token;
 
     return res;
@@ -49,7 +53,11 @@ export class AuthController {
     const userId = req.user.userId;
     const refreshToken = req.user.refreshToken;
     const res = await this.authService.refreshToken(userId, refreshToken);
-    response.cookie('refresh_token', res.refresh_token, { httpOnly: true });
+    response.cookie('refresh_token', res.refresh_token, {
+      signed: true,
+      httpOnly: true,
+      secure: true
+    });
     delete res.refresh_token;
 
     return res;
