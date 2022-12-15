@@ -37,7 +37,7 @@ export class AuthService {
     return null;
   }
 
-  async refreshToken(userId: number, refreshToken: string) {
+  async refreshToken(userId: number, refreshToken: string): Promise<any> {
     const user = await this.usersService.findOneById(userId);
 
     if (!user) {
