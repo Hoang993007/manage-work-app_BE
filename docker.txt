@@ -1,0 +1,8 @@
+$ docker compose convert
+
+#Using the docker exec command, we can access the terminal of the MongoDB container. As the container runs in a detached mode, we will use the Docker interactive terminal to establish the connection.
+$ sudo docker exec -it mongodb bash
+
+$ sudo docker ps -a
+
+$ sudo docker-compose stop

@@ -1,4 +1,4 @@
-import { AUTH_SECRET } from './../../shares/constants/constants';
+import { AUTH_SECRET } from './../../../shares/constants/constants';
 
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
