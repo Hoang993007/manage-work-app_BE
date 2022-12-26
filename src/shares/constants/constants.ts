@@ -14,3 +14,8 @@ export const AUTH_REFRESH_SECRET = config.get<string>('app.auth_refresh_secret')
 export const AUTH_REFRESH_EXPIRES_IN = config.get<number>('app.auth_refresh_expires_in');
 
 export const COOKIES_SECRET = config.get<string>('app.cookies_secret');
+
+export const authSecurityName = {
+  BASIC_AUTH: 'BasicAuth',
+  JWT_AUTH: 'JWTAuth'
+}
