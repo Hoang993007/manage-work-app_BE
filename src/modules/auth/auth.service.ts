@@ -1,6 +1,6 @@
 import { UserRegisterDto } from './../users/dto/user-register.dto';
 import { AUTH_SECRET, AUTH_EXPIRES_IN, AUTH_REFRESH_SECRET, AUTH_REFRESH_EXPIRES_IN } from './../../shares/constants/constants';
-import { Injectable, UnauthorizedException, HttpStatus, HttpException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpStatus, HttpException, BadRequestException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';

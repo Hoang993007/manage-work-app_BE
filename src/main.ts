@@ -30,8 +30,9 @@ async function bootstrap() {
   });
 
   app.use(cookieParser(COOKIES_SECRET));
+  app.enableCors();
 
-  // cannot inject dependencies since this is done outside the context of any module. 
+  // this use cannot inject dependencies since this is done outside the context of any module. 
   // app.useGlobalInterceptors(new LoggingInterceptor());
 
   const openApiConfig = new DocumentBuilder()
