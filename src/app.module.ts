@@ -1,3 +1,4 @@
+import { AllExceptionsFilter } from './shares/filters/all-exceptions.filter';
 import { HttpExceptionFilter } from './shares/filters/http-exception.filter';
 import { TransformInterceptor } from './shares/interceptors/transform.interceptor';
 import { LoggingInterceptor } from './shares/interceptors/logging.interceptor';
@@ -32,7 +33,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
     },
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
+      useClass: AllExceptionsFilter,
     },
   ],
 })
