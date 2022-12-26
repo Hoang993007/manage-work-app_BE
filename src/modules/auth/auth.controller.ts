@@ -1,9 +1,11 @@
+import { authSecurityName } from './../../shares/constants/constants';
+import { UserRegisterDto } from './../users/dto/user-register.dto';
 import { JwtRefreshGuard } from './guard/jwt-refresh.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { UserLoginDto } from './dto/user-login.dto';
 import { LocalAuthGuard } from './guard/local-auth.guard';
-import { Controller, Post, UseGuards, Get, Req, Res } from '@nestjs/common';
+import { Controller, Post, UseGuards, Get, Req, Res, Body } from '@nestjs/common';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 
@@ -15,18 +17,48 @@ export class AuthController {
   ) { }
 
   @ApiBody({
+    type: UserRegisterDto,
+    description: "User register body",
+    examples: {
+      user1: {
+        summary: "user example 1",
+        value: {
+          emailOrUsername: 'hoang',
+          password: '1234567'
+        } as UserRegisterDto
+      },
+    }
+  })
+  @Post('register')
+  async register(
+    @Body() userRegisterDto: UserRegisterDto,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    const res = await this.authService.register(userRegisterDto);
+    response.cookie('refresh_token', res.refresh_token, {
+      signed: true,
+      httpOnly: true,
+      secure: true
+    });
+    delete res.refresh_token;
+
+    return res;
+  }
+
+  @ApiBody({
     type: UserLoginDto,
     description: "Login body",
     examples: {
       user1: {
         summary: "user example 1",
         value: {
-          emailOrUsername: 'john',
-          password: 'changeme'
+          emailOrUsername: 'hoang',
+          password: '1234567'
         } as UserLoginDto
       },
     }
   })
+  @ApiSecurity(authSecurityName.BASIC_AUTH)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
@@ -63,7 +95,7 @@ export class AuthController {
     return res;
   }
 
-  @ApiSecurity('JWTAuth')
+  @ApiSecurity(authSecurityName.JWT_AUTH)
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Req() req: Request) {

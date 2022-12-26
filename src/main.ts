@@ -1,4 +1,4 @@
-import { API_PREFIX, APP_PORT, OPEN_API_TITLE, OPEN_API_DESCRIPTION, OPEN_API_VERSION, COOKIES_SECRET } from './shares/constants/constants';
+import { API_PREFIX, APP_PORT, OPEN_API_TITLE, OPEN_API_DESCRIPTION, OPEN_API_VERSION, COOKIES_SECRET, authSecurityName } from './shares/constants/constants';
 /**
  * Must import env at top of main.ts file so env will be loaded before any initialization of any module
  * Json file/ts file will be complied parallel with main file
@@ -20,6 +20,7 @@ import * as cookieParser from 'cookie-parser';
 
 process.env["NODE_CONFIG_DIR"] = `./config`;
 import { RequestMethod } from '@nestjs/common';
+import { LoggingInterceptor } from './shares/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,15 +31,18 @@ async function bootstrap() {
 
   app.use(cookieParser(COOKIES_SECRET));
 
+  // cannot inject dependencies since this is done outside the context of any module. 
+  // app.useGlobalInterceptors(new LoggingInterceptor());
+
   const openApiConfig = new DocumentBuilder()
     .setTitle(OPEN_API_TITLE)
     .setDescription(OPEN_API_DESCRIPTION)
     .setVersion(OPEN_API_VERSION)
-    .addSecurity('BasicAuth', {
+    .addSecurity(authSecurityName.BASIC_AUTH, {
       type: 'http',
       scheme: 'basic',
     })
-    .addSecurity('JWTAuth', {
+    .addSecurity(authSecurityName.JWT_AUTH, {
       type: 'http',
       scheme: 'bearer'
     })

@@ -1,5 +1,6 @@
+import { UserRegisterDto } from './../users/dto/user-register.dto';
 import { AUTH_SECRET, AUTH_EXPIRES_IN, AUTH_REFRESH_SECRET, AUTH_REFRESH_EXPIRES_IN } from './../../shares/constants/constants';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpStatus, HttpException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
@@ -10,6 +11,18 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService
   ) { }
+
+  async register(userRegisterDto: UserRegisterDto): Promise<any> {
+    // const payload: AuthJwtPayload = { email: user.email, username: user.username, sub: user.userId }
+    // const accessToken = await this.getAccessToken(payload);
+    // const refreshToken = await this.getRefreshToken(payload);
+
+    // return {
+    //   // ...user,
+    //   access_token: accessToken,
+    //   refresh_token: refreshToken
+    // };
+  }
 
   async login(user: any): Promise<any> {
     const payload: AuthJwtPayload = { email: user.email, username: user.username, sub: user.userId }
@@ -41,7 +54,13 @@ export class AuthService {
     const user = await this.usersService.findOneById(userId);
 
     if (!user) {
-      throw new UnauthorizedException('Access Denied');
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Access Denied',
+        },
+        HttpStatus.UNAUTHORIZED
+      );
     }
 
     const payload: AuthJwtPayload = { email: user.email, username: user.username, sub: user.userId }
