@@ -1,4 +1,4 @@
-import { authSecurityName } from './../../shares/constants/constants';
+import { authSecurityName } from '../../shares/constants/constants';
 import { UserRegisterDto } from './../users/dto/user-register.dto';
 import { JwtRefreshGuard } from './guard/jwt-refresh.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
@@ -23,7 +23,7 @@ export class AuthController {
       user1: {
         summary: "user example 1",
         value: {
-          emailOrUsername: 'hoang',
+          usernameOrEmail: 'hoang',
           password: '1234567'
         } as UserRegisterDto
       },
@@ -34,7 +34,7 @@ export class AuthController {
     @Body() userRegisterDto: UserRegisterDto,
     @Res({ passthrough: true }) response: Response
   ) {
-    const res = await this.authService.register(userRegisterDto);
+    const res = await this.authService.userRegister(userRegisterDto);
     response.cookie('refresh_token', res.refresh_token, {
       signed: true,
       httpOnly: true,
@@ -52,7 +52,7 @@ export class AuthController {
       user1: {
         summary: "user example 1",
         value: {
-          emailOrUsername: 'hoang',
+          usernameOrEmail: 'hoang',
           password: '1234567'
         } as UserLoginDto
       },

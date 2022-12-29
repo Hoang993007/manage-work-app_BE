@@ -1,4 +1,3 @@
-import { API_PREFIX, APP_PORT, OPEN_API_TITLE, OPEN_API_DESCRIPTION, OPEN_API_VERSION, COOKIES_SECRET, authSecurityName } from './shares/constants/constants';
 /**
  * Must import env at top of main.ts file so env will be loaded before any initialization of any module
  * Json file/ts file will be complied parallel with main file
@@ -6,21 +5,26 @@ import { API_PREFIX, APP_PORT, OPEN_API_TITLE, OPEN_API_DESCRIPTION, OPEN_API_VE
  **/
 import * as dotenv from 'dotenv';
 const env = dotenv.config({ path: '.env' });
-console.log("ENV", env);
+
+import { NestFactory } from '@nestjs/core';
+import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+
+import { AppModule } from './app.module';
+import { API_PREFIX, APP_PORT, OPEN_API_TITLE, OPEN_API_DESCRIPTION, OPEN_API_VERSION, COOKIES_SECRET } from './shares/constants/env.constants';
+import { authSecurityName } from './shares/constants/constants';
+
+const logger = new Logger();
+logger.log(env);
 
 // Test dotenv engine which parses the contents of file containing environemnt
 const buf = Buffer.from('BASIC=basic')
 const configTest = dotenv.parse(buf)
-console.log(typeof configTest, configTest)
+logger.log(typeof configTest, configTest)
 
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as cookieParser from 'cookie-parser';
-
+// set config directory for config library
 process.env["NODE_CONFIG_DIR"] = `./config`;
-import { RequestMethod } from '@nestjs/common';
-import { LoggingInterceptor } from './shares/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,11 +33,19 @@ async function bootstrap() {
     exclude: [{ path: '/', method: RequestMethod.GET }],
   });
 
-  app.use(cookieParser(COOKIES_SECRET));
-  app.enableCors();
+  app.useGlobalPipes(new ValidationPipe({
+    disableErrorMessages: false,
+    whitelist: true, // filter out properties that should not be received by the method handler.
+    forbidNonWhitelisted: false,
+    transform: true,
+  }));
 
   // this use cannot inject dependencies since this is done outside the context of any module. 
   // app.useGlobalInterceptors(new LoggingInterceptor());
+
+  app.use(cookieParser(COOKIES_SECRET));
+
+  app.enableCors();
 
   const openApiConfig = new DocumentBuilder()
     .setTitle(OPEN_API_TITLE)

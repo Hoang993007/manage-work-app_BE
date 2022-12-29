@@ -1,6 +1,5 @@
 interface AuthJwtPayload {
-  email: string;
-  username: string;
+  usernameOrEmail: string;
   iss?: string;
   exp?: number;
   sub?: string;

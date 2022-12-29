@@ -1,3 +1,4 @@
+import { AdminModule } from './../admin/admin.module';
 import { JwtRefreshStrategy } from './strategie/jwtRefresh.strategy';
 import { JwtStrategy } from './strategie/jwt.strategy';
 import { AuthController } from './auth.controller';
@@ -11,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 @Module({
   imports: [
     UsersModule, 
+    AdminModule,
     PassportModule,
     JwtModule
   ],

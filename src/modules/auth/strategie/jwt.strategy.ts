@@ -1,4 +1,4 @@
-import { AUTH_SECRET } from './../../../shares/constants/constants';
+import { AUTH_SECRET } from '../../../shares/constants/env.constants';
 
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
@@ -15,6 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: AuthJwtPayload) {
-    return { email: payload.email, userId: payload.sub, username: payload.username };
+    return { usernameOrEmail: payload.usernameOrEmail, userId: payload.sub };
   }
 }
