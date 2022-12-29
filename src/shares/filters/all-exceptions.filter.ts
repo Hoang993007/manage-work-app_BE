@@ -1,9 +1,11 @@
+import { errorNameType } from './../constants/constants';
 import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
@@ -11,8 +13,12 @@ import { HttpAdapterHost } from '@nestjs/core';
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) { }
 
+  private readonly logger = new Logger(AllExceptionsFilter.name);
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;
+
+    console.log(exception)
 
     if (host.getType() === 'http') {
       const ctx = host.switchToHttp();
@@ -30,12 +36,24 @@ export class AllExceptionsFilter implements ExceptionFilter {
           ? exception.getResponse()
           : undefined;
 
-      const responseBody = {
+      const responseBody: any = {
         statusCode: httpStatus,
         timestamp: new Date().toISOString(),
         path: httpAdapter.getRequestUrl(ctx.getRequest()),
         message: exceptionResponse?.message || (exception as any).message,
       };
+
+      if (exception instanceof Error) {
+        if ((exception as Error).name === errorNameType.MONGO_SERVER_ERROR) {
+          delete responseBody.message;
+
+          responseBody.error = {
+            errorType: (exception as Error).name,
+            message: (exception as Error).message,
+            code: (exception as any).code
+          }
+        }
+      }
 
       httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
     } else if (host.getType() === 'rpc') {

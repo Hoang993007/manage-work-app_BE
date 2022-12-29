@@ -1,4 +1,4 @@
-import { AUTH_REFRESH_SECRET } from './../../../shares/constants/constants';
+import { AUTH_REFRESH_SECRET } from '../../../shares/constants/env.constants';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
@@ -23,6 +23,6 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 
   async validate(req: any, payload: AuthJwtPayload) {
     const refreshToken = req.cookies["refresh_token"];
-    return { email: payload.email, userId: payload.sub, username: payload.username, refreshToken };
+    return { usernameOrEmail: payload.usernameOrEmail, userId: payload.sub, refreshToken };
   }
 }

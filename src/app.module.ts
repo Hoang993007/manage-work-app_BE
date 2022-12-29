@@ -11,6 +11,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { AdminController } from './modules/admin/admin.controller';
+import { AdminService } from './modules/admin/admin.service';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -18,9 +21,15 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
     AuthModule,
     UsersModule,
     FeatureModule,
-    MongooseModule.forRoot('mongodb://localhost/nest')
+    MongooseModule.forRoot(
+      `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
+      {
+        dbName: process.env.MONGO_DATABASE_NAME
+      }
+    ),
+    AdminModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, AdminController],
   providers: [
     AppService,
     {
@@ -35,6 +44,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    AdminService,
   ],
 })
 export class AppModule { }

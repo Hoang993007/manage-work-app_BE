@@ -9,6 +9,7 @@ app:
   auth_refresh_secret: BMeQ2d7RMH8iCkv1BJr407qBQRZejtf6
   auth_refresh_expires_in: 172800 #60*60*24*2
   cookies_secret: BMeQ2d7RMH8iCkv1BJr407qBQRZejtf6
+  salt_rounds: 10
 
 open_api:
   title: Cats example
