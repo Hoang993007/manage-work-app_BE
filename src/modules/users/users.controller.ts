@@ -1,3 +1,4 @@
+import { adminRoleArr } from './../../shares/constants/constants';
 import { adminRole } from '../../shares/constants/constants';
 import { Roles } from './../../shares/decorators/test.decorator';
 import { UsersService } from './users.service';
@@ -11,7 +12,7 @@ import { RolesGuard } from 'src/shares/guards/roles.guard';
 export class UsersController {
   constructor(private readonly userService: UsersService) { }
 
-  @Roles(adminRole.ADMIN, adminRole.SUPER_ADMIN)
+  @Roles(adminRoleArr)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/')
   getUsers(@Request() req: any) {

@@ -1,3 +1,4 @@
+import { AdminLocalStrategy } from './strategie/admin.local.strategy';
 import { AdminModule } from './../admin/admin.module';
 import { JwtRefreshStrategy } from './strategie/jwtRefresh.strategy';
 import { JwtStrategy } from './strategie/jwt.strategy';
@@ -16,7 +17,13 @@ import { JwtModule } from '@nestjs/jwt';
     PassportModule,
     JwtModule
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
+  providers: [
+    AuthService, 
+    LocalStrategy, 
+    AdminLocalStrategy,
+    JwtStrategy, 
+    JwtRefreshStrategy
+  ],
   controllers: [AuthController]
 })
 export class AuthModule {}
