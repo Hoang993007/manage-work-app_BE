@@ -59,6 +59,10 @@ async function bootstrap() {
       type: 'http',
       scheme: 'bearer'
     })
+    .addSecurity(authSecurityName.ADMIN_JWT_AUTH, {
+      type: 'http',
+      scheme: 'bearer'
+    })
     .build();
   const document = SwaggerModule.createDocument(app, openApiConfig);
   SwaggerModule.setup('api-docs', app, document);

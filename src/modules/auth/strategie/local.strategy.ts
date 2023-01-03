@@ -1,3 +1,4 @@
+import { adminRoleArr } from './../../../shares/constants/constants';
 
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
@@ -5,7 +6,7 @@ import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@n
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy) {
+export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   constructor(private authService: AuthService) {
     super({
       usernameField: 'emailOrUsername',
@@ -23,6 +24,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         HttpStatus.UNAUTHORIZED
       );
     }
+
     return user;
   }
 }
