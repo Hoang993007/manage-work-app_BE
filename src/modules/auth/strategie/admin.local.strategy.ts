@@ -1,3 +1,5 @@
+import { strategyName } from './../../../shares/constants/constants';
+import { AdminService } from './../../admin/admin.service';
 
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
@@ -6,8 +8,8 @@ import { adminRoleArr } from '../../../shares/constants/constants';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class AdminLocalStrategy extends PassportStrategy(Strategy, 'local-admin') {
-  constructor(private authService: AuthService) {
+export class AdminLocalStrategy extends PassportStrategy(Strategy, strategyName.LOCAL_ADMIN) {
+  constructor(private adminService: AdminService) {
     super({
       passReqToCallback: true
     });
@@ -19,13 +21,12 @@ export class AdminLocalStrategy extends PassportStrategy(Strategy, 'local-admin'
       throw new HttpException('No role exists', HttpStatus.BAD_REQUEST);
     }
 
-    const admin = await this.authService.validateAdmin(username, password, role);
+    const admin = await this.adminService.validateAdmin(username, password, role);
+    await this.adminService.validateAdmin(username, password, role)
+
     if (!admin) {
       throw new HttpException(
-        {
-          status: HttpStatus.UNAUTHORIZED,
-          error: 'Username/email or password is not correct',
-        },
+        'Username/email or password is not correct',
         HttpStatus.UNAUTHORIZED
       );
     }

@@ -26,12 +26,10 @@ export class AuthService {
   async adminLogin(admin: any): Promise<any> {
     const payload: AdminAuthJwtPayload = { username: admin.usernameOrEmail, sub: admin._id.toString(), role: admin.role }
     const accessToken = await this.getAccessToken(payload);
-    const refreshToken = await this.getRefreshToken(payload);
 
     return {
-      ...admin,
+      ...admin.toObject(),
       access_token: accessToken,
-      refresh_token: refreshToken
     };
   }
 
@@ -42,6 +40,8 @@ export class AuthService {
     const accessToken = await this.getAccessToken(payload);
     const refreshToken = await this.getRefreshToken(payload);
 
+    await newUser.updateOne({ refreshToken })
+
     return {
       ...newUser.toObject(),
       access_token: accessToken,
@@ -50,12 +50,12 @@ export class AuthService {
   }
 
   async userLogin(user: any): Promise<any> {
-    const payload: AuthJwtPayload = { usernameOrEmail: user.usernameOrEmail, sub: user.userId }
+    const payload: AuthJwtPayload = { usernameOrEmail: user.usernameOrEmail, sub: user._id.toString() }
     const accessToken = await this.getAccessToken(payload);
     const refreshToken = await this.getRefreshToken(payload);
 
     return {
-      ...user,
+      ...user.toObject(),
       access_token: accessToken,
       refresh_token: refreshToken
     };
@@ -65,35 +65,8 @@ export class AuthService {
     return '';
   }
 
-  async validateAdmin(username: string, password: string, role: string): Promise<any> {
-    const admin = await this.adminService.validateAdmin(username, password, role);
-    return admin;
-  }
-
-  async validateUser(emailOrUsername: string, password: string): Promise<any> {
-    const user = await this.usersService.findOneByUserEmailOrUserName(emailOrUsername);
-
-    if (user && user.password === password) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
-  }
-
-  async refreshToken(userId: string, refreshToken: string): Promise<any> {
-    const user = await this.usersService.findOneById(userId);
-
-    if (!user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNAUTHORIZED,
-          error: 'Access Denied',
-        },
-        HttpStatus.UNAUTHORIZED
-      );
-    }
-
-    const payload: AuthJwtPayload = { usernameOrEmail: user.usernameOrEmail, sub: userId }
+  async refreshToken(user: any): Promise<any> {
+    const payload: AuthJwtPayload = { usernameOrEmail: user.usernameOrEmail, sub: user._id.toString() }
     const accessToken = await this.getAccessToken(payload);
     const newRefreshToken = await this.getRefreshToken(payload);
 

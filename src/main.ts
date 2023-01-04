@@ -10,6 +10,7 @@ import { NestFactory } from '@nestjs/core';
 import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import * as mongoose from 'mongoose';
 
 import { AppModule } from './app.module';
 import { API_PREFIX, APP_PORT, OPEN_API_TITLE, OPEN_API_DESCRIPTION, OPEN_API_VERSION, COOKIES_SECRET } from './shares/constants/env.constants';
@@ -26,6 +27,12 @@ logger.log(typeof configTest, configTest)
 // set config directory for config library
 process.env["NODE_CONFIG_DIR"] = `./config`;
 
+mongoose.set("debug", (collectionName, method, query, doc) => {
+  console.log(`${collectionName}.${method}`, query, doc);
+});
+
+// await mongoose.connect('mongodb://127.0.0.1:27017/test');
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -36,6 +43,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({
     disableErrorMessages: false,
     whitelist: true, // filter out properties that should not be received by the method handler.
+    // Every dto property must implement at least one class-validation method
     forbidNonWhitelisted: false,
     transform: true,
   }));
@@ -59,14 +67,10 @@ async function bootstrap() {
       type: 'http',
       scheme: 'bearer'
     })
-    .addSecurity(authSecurityName.ADMIN_JWT_AUTH, {
-      type: 'http',
-      scheme: 'bearer'
-    })
     .build();
   const document = SwaggerModule.createDocument(app, openApiConfig);
   SwaggerModule.setup('api-docs', app, document);
 
   await app.listen(APP_PORT);
 }
-bootstrap();
+bootstrap().catch(error => console.log(error));

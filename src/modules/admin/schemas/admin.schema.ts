@@ -12,10 +12,7 @@ export class Admin {
   @Prop({ required: true })
   email: string;
 
-  @Prop({
-    required: true,
-    select: false
-  })
+  @Prop({ required: true, select: false })
   password: string;
 
   @Prop({

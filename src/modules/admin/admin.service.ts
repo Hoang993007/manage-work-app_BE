@@ -26,15 +26,14 @@ export class AdminService {
   }
 
   async validateAdmin(username: string, password: string, role: string): Promise<any> {
-    const admin = await this.adminModel.findOne({
-      username,
-      password,
-      role
-    }).select('+password');
-
+    const admin = await this.adminModel.findOne({ username, role }).select('+password');
     if (!admin) return null;
 
-    return admin.toObject();
+    if (admin.password === password) {
+      admin.set('password', undefined, { strict: false })
+      return admin;
+    }
+    return null;
   }
 
   // async upatePassword () {

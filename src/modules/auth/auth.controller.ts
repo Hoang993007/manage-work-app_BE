@@ -1,6 +1,6 @@
+import { AdminJwtAuthGuard } from './guard/admin.jwt-auth.guard';
 import { AdminLocalAuthGuard } from './guard/admin.local-auth.guard';
 import { adminRole } from './../../shares/constants/constants';
-import { Roles } from './../../shares/decorators/test.decorator';
 import { CreateAdminDto } from './../admin/dto/create-admin.dto';
 import { apibody_userRegister, apibody_userLogin, apibody_adminLogin, apibody_createAdmin } from './api-body.swagger';
 import { authSecurityName } from '../../shares/constants/constants';
@@ -12,6 +12,8 @@ import { LocalAuthGuard } from './guard/local-auth.guard';
 import { Controller, Post, UseGuards, Get, Req, Res, Body } from '@nestjs/common';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { Roles } from 'src/shares/decorators/roles.decorator';
+import { RolesGuard } from './guard/roles.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -20,9 +22,10 @@ export class AuthController {
     private readonly authService: AuthService
   ) { }
 
-  @ApiBody(apibody_createAdmin)
-  @ApiSecurity(authSecurityName.ADMIN_JWT_AUTH)
+  @ApiSecurity(authSecurityName.JWT_AUTH)
+  @UseGuards(AdminJwtAuthGuard, RolesGuard)
   @Roles(adminRole.SUPER_ADMIN)
+  @ApiBody(apibody_createAdmin)
   @Post('/admin/create')
   async createAdmin(
     @Body() createAdminDto: CreateAdminDto,
@@ -39,14 +42,8 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response
   ) {
-    const res = await this.authService.adminLogin(req.user);
-    response.cookie('refresh_token', res.refresh_token, {
-      signed: true,
-      httpOnly: true,
-      secure: true
-    });
-    delete res.refresh_token;
-
+    const admin: any = req.user;
+    const res = await this.authService.adminLogin(admin);
     return res;
   }
 
@@ -57,6 +54,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response
   ) {
     const res = await this.authService.userRegister(userRegisterDto);
+
     response.cookie('refresh_token', res.refresh_token, {
       signed: true,
       httpOnly: true,
@@ -67,15 +65,19 @@ export class AuthController {
     return res;
   }
 
-  @ApiBody(apibody_userLogin)
   @ApiSecurity(authSecurityName.BASIC_AUTH)
+  @ApiBody(apibody_userLogin)
   @UseGuards(LocalAuthGuard)
   @Post('user/login')
   async login(
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response
   ) {
+    const user: any = req.user;
     const res = await this.authService.userLogin(req.user);
+
+    await user.updateOne({ refreshToken: res.refresh_token })
+
     response.cookie('refresh_token', res.refresh_token, {
       signed: true,
       httpOnly: true,
@@ -92,9 +94,11 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) response: Response
   ) {
-    const userId = req.user.userId;
-    const refreshToken = req.user.refreshToken;
-    const res = await this.authService.refreshToken(userId, refreshToken);
+    const user = req.user;
+    const res = await this.authService.refreshToken(user);
+
+    await user.updateOne({ refreshToken: res.refresh_token })
+
     response.cookie('refresh_token', res.refresh_token, {
       signed: true,
       httpOnly: true,

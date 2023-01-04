@@ -68,6 +68,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
             message: (exception as Error).message,
             status: (exception as any).status
           }
+        } else {
+          responseBody.error = {
+            errorType: (exception as Error).name,
+            message: (exception as Error).message,
+          }
         }
       }
 

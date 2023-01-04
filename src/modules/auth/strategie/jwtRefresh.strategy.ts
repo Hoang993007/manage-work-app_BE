@@ -1,12 +1,16 @@
+import { strategyName } from './../../../shares/constants/constants';
+import { UsersService } from './../../users/users.service';
 import { AUTH_REFRESH_SECRET } from '../../../shares/constants/env.constants';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Request } from 'express';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  constructor() {
+export class JwtRefreshStrategy extends PassportStrategy(Strategy, strategyName.USER_JWT_REFERSH) {
+  constructor(
+    private readonly userService: UsersService
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
         let refreshToken = request?.signedCookies["refresh_token"];
@@ -22,7 +26,16 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   }
 
   async validate(req: any, payload: AuthJwtPayload) {
-    const refreshToken = req.cookies["refresh_token"];
-    return { ...payload, refreshToken };
+    const refreshToken = req.signedCookies["refresh_token"];
+
+    const user = await this.userService.validateUserRefreshToken(payload.sub, refreshToken);
+    if (!user) {
+      throw new HttpException(
+        'Invalid refresh token',
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+
+    return user;
   }
 }

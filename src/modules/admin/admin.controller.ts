@@ -1,11 +1,15 @@
+import { AdminJwtAuthGuard } from './../auth/guard/admin.jwt-auth.guard';
 import { Admin } from './schemas/admin.schema';
-import { adminRoleArr } from './../../shares/constants/constants';
-import { Roles } from './../../shares/decorators/test.decorator';
+import { adminRoleArr, authSecurityName } from './../../shares/constants/constants';
 import { AdminService } from './admin.service';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Res, Param, HttpCode, Query } from '@nestjs/common';
+import { ApiParam, ApiTags, ApiSecurity } from '@nestjs/swagger';
+import { Controller, Get, Res, Param, HttpCode, Query, UseGuards } from '@nestjs/common';
+import { Roles } from 'src/shares/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guard/roles.guard';
 
 @ApiTags('Admin')
+@ApiSecurity(authSecurityName.JWT_AUTH)
+@UseGuards(AdminJwtAuthGuard, RolesGuard)
 @Roles(adminRoleArr)
 @Controller('admin')
 export class AdminController {

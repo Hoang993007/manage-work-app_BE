@@ -1,3 +1,4 @@
+import { AdminJwtStrategy } from './strategie/admin.jwt.strategy';
 import { AdminLocalStrategy } from './strategie/admin.local.strategy';
 import { AdminModule } from './../admin/admin.module';
 import { JwtRefreshStrategy } from './strategie/jwtRefresh.strategy';
@@ -9,20 +10,23 @@ import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategie/local.strategy'; 
 import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guard/roles.guard';
 
 @Module({
   imports: [
     UsersModule, 
     AdminModule,
     PassportModule,
-    JwtModule
+    JwtModule,
   ],
   providers: [
     AuthService, 
     LocalStrategy, 
     AdminLocalStrategy,
     JwtStrategy, 
-    JwtRefreshStrategy
+    AdminJwtStrategy,
+    JwtRefreshStrategy,
   ],
   controllers: [AuthController]
 })
