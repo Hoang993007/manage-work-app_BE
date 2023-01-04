@@ -22,7 +22,6 @@ export class AdminLocalStrategy extends PassportStrategy(Strategy, strategyName.
     }
 
     const admin = await this.adminService.validateAdmin(username, password, role);
-    await this.adminService.validateAdmin(username, password, role)
 
     if (!admin) {
       throw new HttpException(

@@ -1,3 +1,4 @@
+import { compareBcrypt } from './../../shares/utils/utils';
 import { User, UserDocument } from './schemas/user.schema';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,7 +18,7 @@ export class UsersService {
     //   return user;
     // }
 
-    if (user.password === password) {
+    if (await compareBcrypt(password, user.password)) {
       user.set('password', undefined, { strict: false })
       return user;
     }

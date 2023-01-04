@@ -6,12 +6,12 @@ export class CreateAdminDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  readonly username: string;
+  username: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  readonly password: string;
+  password: string;
 
   @ApiProperty()
   @IsString()
@@ -21,9 +21,9 @@ export class CreateAdminDto {
     message: 'Invalid admin email',
     context: {}
   })
-  readonly email: string;
+  email: string;
 
   @ApiProperty()
   @IsEnum(adminRole)
-  readonly role: string;
+  role: string;
 }
