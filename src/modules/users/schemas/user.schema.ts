@@ -32,10 +32,10 @@ export class User extends Document {
 
   getFullName: Function;
 
-  comparePassword(password: string) {
-    if (this.password === password) return true;
-    return false;
-  }
+  // comparePassword(password: string) {
+  //   if (this.password === password) return true;
+  //   return false;
+  // }
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

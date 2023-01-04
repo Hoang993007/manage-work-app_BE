@@ -1,3 +1,4 @@
+import { compareBcrypt } from './../../shares/utils/utils';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { modelName } from 'src/shares/constants/mongoModelName';
 import { InjectModel } from '@nestjs/mongoose';
@@ -29,7 +30,7 @@ export class AdminService {
     const admin = await this.adminModel.findOne({ username, role }).select('+password');
     if (!admin) return null;
 
-    if (admin.password === password) {
+    if (await compareBcrypt(password, admin.password)) {
       admin.set('password', undefined, { strict: false })
       return admin;
     }

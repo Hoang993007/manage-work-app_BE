@@ -1,15 +1,13 @@
 import { AdminService } from './../admin/admin.service';
 import { CreateAdminDto } from '../admin/dto/create-admin.dto';
-import { InjectModel } from '@nestjs/mongoose';
 import { UserRegisterDto } from './../users/dto/user-register.dto';
 import { AUTH_SECRET, AUTH_EXPIRES_IN, AUTH_REFRESH_SECRET, AUTH_REFRESH_EXPIRES_IN } from '../../shares/constants/env.constants';
-import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { User, UserDocument } from '../users/schemas/user.schema';
-import { Model } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { encryptText } from 'src/shares/utils/utils';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +18,7 @@ export class AuthService {
   ) { }
 
   async createAdmin(createAdminDto: CreateAdminDto) {
+    createAdminDto.password = await encryptText(createAdminDto.password);
     await this.adminService.createAdmin(createAdminDto);
   }
 
@@ -34,6 +33,7 @@ export class AuthService {
   }
 
   async userRegister(userRegisterDto: UserRegisterDto): Promise<any> {
+    userRegisterDto.password = await encryptText(userRegisterDto.password);
     const newUser = await this.usersService.createNewUser(userRegisterDto);
 
     const payload: AuthJwtPayload = { usernameOrEmail: userRegisterDto.usernameOrEmail, sub: newUser._id.toString() }
