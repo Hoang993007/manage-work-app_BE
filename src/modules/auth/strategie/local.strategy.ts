@@ -1,5 +1,5 @@
 import { UsersService } from './../../users/users.service';
-import { adminRoleArr, strategyName } from './../../../shares/constants/constants';
+import { adminRoleEnum, strategyName } from './../../../shares/constants/constants';
 
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';

@@ -14,22 +14,25 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AdminController } from './modules/admin/admin.controller';
 import { AdminService } from './modules/admin/admin.service';
 import { AdminModule } from './modules/admin/admin.module';
+import { ManageMonthIncomeService } from './modules/manage-month-income/manage-month-income.service';
+import { ManageMonthIncomeModule } from './modules/manage-month-income/manage-month-income.module';
 
 const logger = new Logger();
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    AuthModule,
-    UsersModule,
-    FeatureModule,
     MongooseModule.forRoot(
       `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
       {
         dbName: process.env.MONGO_DATABASE_NAME,
       }
     ),
-    AdminModule
+    AuthModule,
+    UsersModule,
+    FeatureModule,
+    AdminModule,
+    ManageMonthIncomeModule,
   ],
   controllers: [AppController, AdminController],
   providers: [
@@ -47,6 +50,7 @@ const logger = new Logger();
       useClass: AllExceptionsFilter,
     },
     AdminService,
+    ManageMonthIncomeService,
   ],
 })
 export class AppModule { }
