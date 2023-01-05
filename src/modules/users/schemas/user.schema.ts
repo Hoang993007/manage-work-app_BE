@@ -43,6 +43,8 @@ UserSchema.loadClass(User); // This part here (see https://mongoosejs.com/docs/g
 
 UserSchema.index({ usernameOrEmail: 1 }, { unique: true })
 
+UserSchema.index({ age: 1 }, { unique: false })
+
 UserSchema.methods.getFullName = function getFullName() {
   const fullname = (this.details.firstName ? this.details.firstName : '') + ' ' + (this.details.lastName ? this.details.lastName : '');
   return fullname;

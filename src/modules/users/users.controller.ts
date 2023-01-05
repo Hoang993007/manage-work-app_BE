@@ -1,4 +1,4 @@
-import { adminRoleArr, authSecurityName } from './../../shares/constants/constants';
+import { adminRoleEnum, authSecurityName } from './../../shares/constants/constants';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from './../auth/guard/jwt-auth.guard';
 import { ApiTags, ApiSecurity } from '@nestjs/swagger';
@@ -15,7 +15,7 @@ export class UsersController {
   constructor(private readonly userService: UsersService) { }
 
   @ApiSecurity(authSecurityName.JWT_AUTH)
-  @Roles(adminRoleArr)
+  @Roles(adminRoleEnum)
   @UseGuards(AdminJwtAuthGuard, RolesGuard)
   @Get('/')
   async getUsers(@Req() req: any) {

@@ -1,3 +1,4 @@
+import { modelName } from 'src/shares/constants/mongoModelName';
 import UserSchema, { User } from './schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
@@ -6,7 +7,7 @@ import { UsersController } from './users.controller';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]) // register user model
+    MongooseModule.forFeature([{ name: modelName.USER_MODEL, schema: UserSchema }]) // register user model
   ],
   providers: [UsersService],
   controllers: [UsersController],

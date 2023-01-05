@@ -40,6 +40,8 @@ export class UsersService {
 
   async createNewUser(userRegisterDto: UserRegisterDto): Promise<UserDocument> {
     const createdUser = new this.userModel(userRegisterDto);
+    // console.log(createdUser.getFullName()) // methods con be used right now
+
     return await createdUser.save();
   }
 
