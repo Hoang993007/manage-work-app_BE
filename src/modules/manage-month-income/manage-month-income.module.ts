@@ -11,7 +11,7 @@ import IncomeCategorySchema from './schemas/incomeCategory.schema';
   imports: [
     MongooseModule.forFeature([
       { name: modelName.MANAGE_MONTH_INCOME_MODEL, schema: ManageMonthIncomeSchema },
-      { name: modelName.INCOME_CATEGORY, schema: IncomeCategorySchema }
+      { name: modelName.INCOME_CATEGORY_MODEL, schema: IncomeCategorySchema }
     ])
   ],
   providers: [ManageMonthIncomeService],

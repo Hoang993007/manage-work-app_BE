@@ -3,13 +3,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
 export class Income {
-  @Prop({
-    required: true,
-    type: String,
-    enum: dayOfWeekEnum,
-  })
-  dayOfWeek: string
-
   @Prop({ required: true })
   day: number
 

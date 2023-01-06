@@ -16,6 +16,10 @@ import { AdminService } from './modules/admin/admin.service';
 import { AdminModule } from './modules/admin/admin.module';
 import { ManageMonthIncomeService } from './modules/manage-month-income/manage-month-income.service';
 import { ManageMonthIncomeModule } from './modules/manage-month-income/manage-month-income.module';
+import { TaskService } from './modules/task/task.service';
+import { TaskController } from './modules/task/task.controller';
+import { TaskModule } from './modules/task/task.module';
+import { TaskScheduleModule } from './modules/task-schedule/task-schedule.module';
 
 const logger = new Logger();
 
@@ -33,8 +37,10 @@ const logger = new Logger();
     FeatureModule,
     AdminModule,
     ManageMonthIncomeModule,
+    TaskModule,
+    TaskScheduleModule,
   ],
-  controllers: [AppController, AdminController],
+  controllers: [AppController, AdminController, TaskController],
   providers: [
     AppService,
     {
@@ -51,6 +57,7 @@ const logger = new Logger();
     },
     AdminService,
     ManageMonthIncomeService,
+    TaskService,
   ],
 })
 export class AppModule { }

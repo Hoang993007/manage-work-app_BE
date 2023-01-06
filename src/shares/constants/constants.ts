@@ -52,3 +52,12 @@ export const monthOfYear = {
   DECEMBER: "December"
 }
 export const monthOfYearEnum = Object.values(monthOfYear);
+
+// Eisenhower Decision Matrix
+export const taskPriority = {
+  IMPORTANT_AND_URGENT: 'IMPORTANT_AND_URGENT',
+  URGENT: 'URGENT',
+  IMPORTANT: 'IMPORTANT',
+  NEITHER: 'NEITHER'
+}
+export const taskPriorityEnum = Object.values(taskPriority);

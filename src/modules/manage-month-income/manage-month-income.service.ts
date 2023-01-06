@@ -12,14 +12,14 @@ import { IncomeCategoryDocument } from './schemas/incomeCategory.schema';
 export class ManageMonthIncomeService {
   constructor(
     @InjectModel(modelName.MANAGE_MONTH_INCOME_MODEL) private manageMOnthIncomeModel: Model<ManageMonthIncomeDocument>,
-    @InjectModel(modelName.INCOME_CATEGORY) private incomeCategoryModel: Model<IncomeCategoryDocument>
+    @InjectModel(modelName.INCOME_CATEGORY_MODEL) private incomeCategoryModel: Model<IncomeCategoryDocument>
   ) { }
 
   async createNewManageMonthIncome(createManageMonthIncomeDto: CreateManageMonthIncomeDto) {
     const jarsSystemSetting = this.getJarsSystemSetting(createManageMonthIncomeDto.jarsSystemSetting);
     const newManageMonthIncome = new this.manageMOnthIncomeModel({
-      month: convertMonthNumToName(Number(new Date().getMonth().toLocaleString()) + 1),
-      year: Number(new Date().getFullYear().toLocaleString().replace(',', '')),
+      month: convertMonthNumToName(Number(new Date().getMonth()) + 1),
+      year: Number(new Date().getFullYear()),
       jarsSystemSetting
     });
     await newManageMonthIncome.save();
@@ -39,8 +39,12 @@ export class ManageMonthIncomeService {
   }
 
   async createNewIncome(createIncomeDto: CreateIncomeDto) {
-    const [month, day, year] = createIncomeDto.date.split('/').map(el => Number(el));
-    const manageMonthIncome = await this.findManageMonthIncome(month, year);
+    const createIncomeUtcDate = new Date(createIncomeDto.date);
+    const createIncomeUtcMonth = createIncomeUtcDate.getMonth();
+    const createIncomeUtcYear = createIncomeUtcDate.getFullYear();
+    const createIncomeUtcDay = createIncomeUtcDate.getDay()
+
+    const manageMonthIncome = await this.findManageMonthIncome(createIncomeUtcMonth, createIncomeUtcYear);
 
     if (!manageMonthIncome) {
       throw new HttpException(
@@ -48,11 +52,10 @@ export class ManageMonthIncomeService {
         HttpStatus.BAD_REQUEST
       )
     }
-
+    
     createIncomeDto.incomes.map(income => {
       manageMonthIncome?.incomes.push({
-        dayOfWeek: convertDayOfWeekNumToDayOfWeekName(new Date(createIncomeDto.date).getDay().toLocaleString()),
-        day,
+        day: createIncomeUtcDay,
         ...income
       })
     })
